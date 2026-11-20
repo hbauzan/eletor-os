@@ -1,0 +1,19 @@
+{
+  "name": "eletor-os",
+  "short_name": "eletor-os",
+  "description": "Sistema operativo diario",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121417",
+  "theme_color": "#121417",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

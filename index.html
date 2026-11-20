@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#121417">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>eletor-os</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-header">
+      <div class="brand-group">
+        <h1 class="app-title">eletor-os</h1>
+        <span id="sync-indicator" class="sync-indicator" aria-live="polite"></span>
+      </div>
+      <div class="header-actions">
+        <button id="mc-badge" type="button" class="mc-badge" title="Registrar Mc del mes">
+          Mc: <span id="mc-count">0</span>/<span id="mc-cupo">15</span>
+        </button>
+        <button id="btn-sync" type="button" class="icon-btn" aria-label="Sincronizar" title="Sincronizar">↻</button>
+        <button id="btn-config" type="button" class="icon-btn" aria-label="Configuración" title="Configuración">⚙️</button>
+      </div>
+    </header>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- Setup / Config View -->
+    <section id="setup-view" class="panel setup-panel" hidden>
+      <h2 id="setup-title" class="section-title">Configuración inicial</h2>
+      <p class="muted-note">Se guarda únicamente en este dispositivo (<code>localStorage</code>).</p>
+      <form id="setup-form" class="setup-form" novalidate>
+        <label class="field-label" for="input-url">Web App URL</label>
+        <input
+          id="input-url"
+          class="text-input"
+          type="url"
+          inputmode="url"
+          autocomplete="off"
+          placeholder="https://script.google.com/macros/s/.../exec"
+          required
+        >
+
+        <label class="field-label" for="input-token">Token / Clave</label>
+        <input
+          id="input-token"
+          class="text-input"
+          type="password"
+          autocomplete="off"
+          placeholder="Tu clave secreta"
+          required
+        >
+
+        <p id="setup-error" class="form-error" hidden></p>
+
+        <div class="form-actions">
+          <button id="btn-save-config" type="submit" class="primary-btn">Guardar y sincronizar</button>
+          <button id="btn-cancel-config" type="button" class="secondary-btn" hidden>Volver</button>
+          <button id="btn-clear-config" type="button" class="danger-outline-btn" hidden>Borrar credenciales</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Main App View -->
+    <main id="main-view" class="main-view" hidden>
+      <section class="controls-section" aria-label="Contexto y estado">
+        <div class="segmented-group" role="group" aria-label="Contexto">
+          <button type="button" class="seg-btn" data-contexto="casa" aria-pressed="true">Casa</button>
+          <button type="button" class="seg-btn" data-contexto="oficina" aria-pressed="false">Oficina</button>
+        </div>
+
+        <div class="segmented-group segmented-3" role="group" aria-label="Estado">
+          <button type="button" class="seg-btn" data-estado="alta" aria-pressed="true">Alta</button>
+          <button type="button" class="seg-btn" data-estado="baja" aria-pressed="false">Baja</button>
+          <button type="button" class="seg-btn" data-estado="horno" aria-pressed="false">En el horno</button>
+        </div>
+      </section>
+
+      <section class="runbook-section" aria-label="Runbook activo">
+        <div id="runbook-cards" class="cards-stack"></div>
+
+        <details id="wednesday-box" class="subtle-details" hidden>
+          <summary>Regla miércoles</summary>
+          <div id="wednesday-cards" class="cards-stack compact-stack"></div>
+        </details>
+
+        <div class="checkin-row">
+          <button id="btn-checkin" type="button" class="checkin-btn">Check-in estado actual</button>
+        </div>
+      </section>
+
+      <section class="fixed-sections" aria-label="Secciones fijas">
+        <details class="fixed-details">
+          <summary>Tardes (Mar/Jue/Vie)</summary>
+          <div id="tardes-cards" class="cards-stack compact-stack"></div>
+        </details>
+
+        <details class="fixed-details">
+          <summary>Bajada / Cierre (18:00 - 23:30)</summary>
+          <div id="bajada-cards" class="cards-stack compact-stack"></div>
+        </details>
+      </section>
+    </main>
+
+    <!-- Sticky Break-Glass Bar -->
+    <div id="break-glass-dock" class="break-glass-dock" hidden>
+      <button id="btn-break-glass" type="button" class="break-glass-btn">Break-Glass</button>
+    </div>
+  </div>
+
+  <!-- Full-Screen Break-Glass Overlay -->
+  <section id="break-glass-view" class="break-glass-overlay" role="dialog" aria-modal="true" aria-labelledby="bg-title" hidden>
+    <div class="bg-inner">
+      <header class="bg-header">
+        <h2 id="bg-title" class="bg-title">Break-Glass</h2>
+        <button id="btn-close-bg" type="button" class="secondary-btn">Cerrar</button>
+      </header>
+
+      <div id="bg-cards" class="cards-stack"></div>
+
+      <div class="timer-panel">
+        <div class="timer-display-row">
+          <span id="timer-display" class="timer-display">00:00</span>
+          <span id="timer-status" class="timer-status" aria-live="polite">Elegí un tiempo</span>
+        </div>
+        <div class="timer-grid">
+          <button type="button" class="timer-btn" data-minutes="10">10 min</button>
+          <button type="button" class="timer-btn" data-minutes="15">15 min</button>
+          <button type="button" class="timer-btn" data-minutes="20">20 min</button>
+          <button type="button" class="timer-btn" data-minutes="30">30 min</button>
+          <button type="button" class="timer-btn" data-minutes="40">40 min</button>
+          <button type="button" class="timer-btn" data-minutes="60">60 min</button>
+        </div>
+        <button id="btn-stop-timer" type="button" class="secondary-btn timer-stop-btn" hidden>Detener timer</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
