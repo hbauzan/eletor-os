@@ -1,0 +1,21 @@
+# Secrets & local config (NEVER commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Private backend, personal runbook data, and local agent tooling (NEVER commit)
+apps-script/
+seed/runbook.tsv
+.agents/
+
+# OS & Editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
